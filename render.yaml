@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: musiq-backend
+    env: node
+    region: oregon
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: YOUTUBE_API_KEY
+        sync: false
+      - key: AI_API_KEY
+        sync: false
+      - key: AI_API_HOST
+        sync: false
+      - key: AI_API_URL
+        sync: false
+      - key: SPOTIFY_API_HOST
+        sync: false
+      - key: SPOTIFY_API_KEY
+        sync: false
+      - key: SHAZAM_API_HOST
+        sync: false
+      - key: SHAZAM_API_KEY
+        sync: false
