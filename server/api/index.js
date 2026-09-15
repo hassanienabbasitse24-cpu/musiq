@@ -5,7 +5,6 @@ const rateLimit = require('express-rate-limit');
 
 const app = express();
 
-// Rate limiter
 const rateLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 30,
@@ -14,7 +13,6 @@ const rateLimiter = rateLimit({
   message: { error: 'Too many requests, please try again later.' },
 });
 
-// Jamendo service
 const JAMENDO_CLIENT_ID = '22ce9a72';
 const JAMENDO_BASE = 'https://api.jamendo.com/v3.0';
 
@@ -23,7 +21,6 @@ async function searchJamendo(query, { limit = 20, offset = 0 } = {}) {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Jamendo API returned ${res.status}`);
   const data = await res.json();
-  const total = data.headers?.results_count || 0;
   const tracks = (data.results || []).map((t) => ({
     id: `jamendo_${t.id}`,
     title: t.name || 'Unknown',
@@ -32,10 +29,8 @@ async function searchJamendo(query, { limit = 20, offset = 0 } = {}) {
     imageUrl: t.image || null,
     audioUrl: t.audio || null,
     duration: t.duration ? t.duration * 1000 : 0,
-    genre: t.musicinfo?.tags?.genres?.[0]?.name || '',
-    licenseUrl: t.license_ccurl || '',
   }));
-  return { tracks, total };
+  return { tracks, total: data.headers?.results_count || 0 };
 }
 
 async function browseJamendo({ limit = 20, offset = 0, order = 'popularity_total' } = {}) {
@@ -43,7 +38,6 @@ async function browseJamendo({ limit = 20, offset = 0, order = 'popularity_total
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Jamendo API returned ${res.status}`);
   const data = await res.json();
-  const total = data.headers?.results_count || 0;
   const tracks = (data.results || []).map((t) => ({
     id: `jamendo_${t.id}`,
     title: t.name || 'Unknown',
@@ -52,10 +46,8 @@ async function browseJamendo({ limit = 20, offset = 0, order = 'popularity_total
     imageUrl: t.image || null,
     audioUrl: t.audio || null,
     duration: t.duration ? t.duration * 1000 : 0,
-    genre: t.musicinfo?.tags?.genres?.[0]?.name || '',
-    licenseUrl: t.license_ccurl || '',
   }));
-  return { tracks, total };
+  return { tracks, total: data.headers?.results_count || 0 };
 }
 
 async function getJamendoTrack(trackId) {
@@ -73,22 +65,17 @@ async function getJamendoTrack(trackId) {
     imageUrl: t.image || null,
     audioUrl: t.audio || null,
     duration: t.duration ? t.duration * 1000 : 0,
-    genre: t.musicinfo?.tags?.genres?.[0]?.name || '',
-    licenseUrl: t.license_ccurl || '',
   };
 }
 
-// Middleware
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 app.use(rateLimiter);
 
-// Health
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'musiq-backend', sources: ['jamendo', 'youtube'] });
 });
 
-// Jamendo routes
 app.get('/jamendo/search', async (req, res) => {
   try {
     const { q, limit = 20, offset = 0 } = req.query;
@@ -134,7 +121,6 @@ app.get('/jamendo/track/:id', async (req, res) => {
   }
 });
 
-// YouTube search route
 app.get('/youtube/search', async (req, res) => {
   try {
     const { q, limit = 10 } = req.query;
@@ -168,12 +154,10 @@ app.get('/youtube/search', async (req, res) => {
   }
 });
 
-// 404
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
 app.use((err, _req, res, _next) => {
   console.error('[ERROR]', err.message);
   res.status(500).json({ error: 'Internal server error' });
