@@ -6,7 +6,6 @@ import jamendoRouter from './routes/jamendo.js';
 import youtubeRouter from './routes/youtube.js';
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
@@ -28,6 +27,4 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ error: 'Internal server error' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Musiq backend running on http://localhost:${PORT}`);
-});
+export default app;
