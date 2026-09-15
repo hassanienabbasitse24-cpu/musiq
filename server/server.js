@@ -28,3 +28,10 @@ app.use((err, _req, res, _next) => {
 });
 
 export default app;
+
+const PORT = process.env.PORT || 3000;
+if (process.argv[1] && process.argv[1].endsWith('server.js')) {
+  app.listen(PORT, () => {
+    console.log(`Musiq backend running on http://localhost:${PORT}`);
+  });
+}
