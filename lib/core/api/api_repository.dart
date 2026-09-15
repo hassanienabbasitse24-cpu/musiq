@@ -22,9 +22,12 @@ class ApiRepository {
 
   static Future<List<Song>> searchSongs(String query, {int limit = 20}) async {
     final jamendoResults = await _searchJamendo(query, limit: limit);
-    if (jamendoResults.isNotEmpty) return jamendoResults;
+    final youtubeResults = await searchYouTube(query, limit: limit);
 
-    return searchYouTube(query, limit: limit);
+    final combined = <Song>[...jamendoResults, ...youtubeResults];
+    if (combined.isNotEmpty) return combined;
+
+    return [];
   }
 
   static Future<List<Song>> searchYouTube(String query, {int limit = 15}) async {
