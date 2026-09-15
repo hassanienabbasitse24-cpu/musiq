@@ -1,11 +1,10 @@
 {
   "name": "musiq-backend",
   "version": "1.0.0",
-  "type": "module",
-  "main": "server.js",
+  "main": "server.mjs",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node --watch server.js"
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs"
   },
   "dependencies": {
     "cors": "^2.8.5",
