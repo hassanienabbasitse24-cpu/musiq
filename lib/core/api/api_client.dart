@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 class ApiClient {
-  static const String cloudBaseUrl = 'https://musiqapp.vercel.app';
+  static const String cloudBaseUrl = 'https://musiq-git-main-musiq1.vercel.app';
 
   static String get baseUrl {
     if (kIsWeb) {
